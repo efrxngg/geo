@@ -1,4 +1,4 @@
-package com.example.demo;
+package uees.project.geo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SpringBootApplication
-public class DemoApplication {
+public class GeoApplication {
 
     @RequestMapping("/")
     String home() {
@@ -16,7 +16,7 @@ public class DemoApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(GeoApplication.class, args);
     }
 
 }
