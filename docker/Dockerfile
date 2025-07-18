@@ -1,19 +1,8 @@
-####
-# This Dockerfile is used in order to build a container that runs the Spring Boot application
-#
-# Build the image with:
-#
-# docker build -f docker/Dockerfile -t springboot/sample-demo .
-#
-# Then run the container using:
-#
-# docker run -i --rm -p 8081:8081 springboot/sample-demo
-####
 FROM maven:3-openjdk-17-slim AS builder
 
 # Build dependency offline to streamline build
 RUN mkdir project
-WORKDIR /home/jboss/project
+WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
@@ -25,8 +14,30 @@ RUN grep version target/maven-archiver/pom.properties | cut -d '=' -f2 >.env-ver
 RUN grep artifactId target/maven-archiver/pom.properties | cut -d '=' -f2 >.env-id
 RUN mv target/$(cat .env-id)-$(cat .env-version).jar target/export-run-artifact.jar
 
+# Stage 2: Create the final image
 FROM openjdk:17-slim
-COPY --from=builder /home/jboss/project/target/export-run-artifact.jar  /deployments/export-run-artifact.jar
-EXPOSE 8081
-ENTRYPOINT ["java", "-jar", "/deployments/export-run-artifact.jar"]
+
+WORKDIR /app
+
+# Create necessary directories
+RUN mkdir /log /config
+
+# Copy the JAR file from the builder stage
+COPY --from=builder /app/target/export-run-artifact.jar /app/export-run-artifact.jar
+
+# Copy the configuration files
+COPY config/ /config
+
+# Set environment variables
+ENV JAR=export-run-artifact.jar
+ENV DEFAULT_OPTIONS="-Duser.timezone=America/Guayaquil -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:/dev/./urandom"
+
+# Create the startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'exec java $DEFAULT_OPTIONS -jar /app/$JAR $SPRING_OPTIONS' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Define the entry point
+ENTRYPOINT ["/app/start.sh"]
+
 
