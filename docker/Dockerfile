@@ -34,7 +34,7 @@ ENV DEFAULT_OPTIONS="-Duser.timezone=America/Guayaquil -Djava.net.preferIPv4Stac
 
 # Create the startup script
 RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'exec java $DEFAULT_OPTIONS -jar /app/$JAR $SPRING_OPTIONS' >> /app/start.sh && \
+    echo 'exec java $DEFAULT_OPTIONS -jar /app/$JAR' >> /app/start.sh && \
     chmod +x /app/start.sh
 
 # Define the entry point
