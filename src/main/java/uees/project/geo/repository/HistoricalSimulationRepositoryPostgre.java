@@ -8,7 +8,7 @@ import uees.project.geo.entity.HistoricalSimulation;
 import java.util.List;
 
 @Repository
-public interface PostgreHistoricalSimulationRepository extends JpaRepository<HistoricalSimulation,Long> {
+public interface HistoricalSimulationRepositoryPostgre extends JpaRepository<HistoricalSimulation,Long> {
 
     @Query(value = "SELECT DISTINCT EXTRACT(YEAR FROM datetime) as  year FROM historical_simulation e", nativeQuery = true)
     List<Integer> findAvailableYears();

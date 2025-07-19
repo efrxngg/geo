@@ -2,9 +2,10 @@ package uees.project.geo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uees.project.geo.dto.ExtremeEventResponse;
-import uees.project.geo.repository.PostgreDrainageNetworkRepository;
+import uees.project.geo.repository.DrainageNetworkRepositoryPostgres;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,11 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QueryExtremeEvents {
 
-    private final PostgreDrainageNetworkRepository postgreDrainageNetworkRepository;
+    private final DrainageNetworkRepositoryPostgres repository;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    @Cacheable(value = "extremeEvents", key = "{#p0,#p1}")
     public List<ExtremeEventResponse> call(String startDate, String endDate) {
-        log.info("Calling HistoricalSimulationRepository");
+        log.info("Calling HistoricalSimulationRepository from: {} to {}", startDate, endDate);
         startDate = ensureDate(startDate, "1900-01-01");
         endDate = ensureDate(endDate, "2100-01-12");
 
@@ -37,8 +39,8 @@ public class QueryExtremeEvents {
             if (end.isBefore(start)) {
                 throw new IllegalArgumentException("La fecha final no puede ser anterior a la fecha inicial");
             }
-
-            return postgreDrainageNetworkRepository.findExtremeEvents(start, end)
+            log.info("call findExtremeEvents from: {} to {}", startDate, endDate);
+            return repository.findExtremeEvents(start, end)
                     .stream()
                     .map(r -> ExtremeEventResponse
                             .builder()

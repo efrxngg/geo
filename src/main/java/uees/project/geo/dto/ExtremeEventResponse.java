@@ -11,4 +11,5 @@ public class ExtremeEventResponse {
     private Double longitude;
     private String location2;
     private String riesgo;
+    private String dateTime;
 }
