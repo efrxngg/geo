@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface DrainageNetworkRepository extends JpaRepository<DrainageNetwork, Long> {
+public interface PostgreDrainageNetworkRepository extends JpaRepository<DrainageNetwork, Long> {
     @Query("""
             SELECT new uees.project.geo.entity.ExtremeEventResult(
                 dn.comid,
