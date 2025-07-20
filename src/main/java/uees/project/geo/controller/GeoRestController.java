@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uees.project.geo.dto.ExtremeEventResponse;
 import uees.project.geo.entity.ExtremeEventResult;
+import uees.project.geo.jobs.ClearCacheInMemory;
 import uees.project.geo.service.QueryExtremeEvents;
 import uees.project.geo.service.QueryYearsOfExtremeEvents;
 
@@ -23,6 +24,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class GeoRestController {
     private final QueryExtremeEvents queryExtremeEventsService;
     private final QueryYearsOfExtremeEvents queryYearsOfExtremeEvents;
+    private final ClearCacheInMemory clearCacheInMemory;
 
     @GetMapping("/extreme-events")
     public ResponseEntity<?> getExtremeEvents(
@@ -42,4 +44,9 @@ public class GeoRestController {
         return ok().body(years);
     }
 
+    @GetMapping("clearCache")
+    public ResponseEntity<Void> clearCache() {
+        clearCacheInMemory.clearCache();
+        return ok().build();
+    }
 }
